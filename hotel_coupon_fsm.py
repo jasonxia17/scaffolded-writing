@@ -48,7 +48,7 @@ fsm[State.BEFORE_DECLARE] = {
         "MinCost(i,j)",
         "DP(i)",
         "DP(i,j)",
-        "Memo(i,)",
+        "Memo(i)",
         "Memo(i,j)",
         "the subproblem",
     ): State.AFTER_DECLARE,
@@ -103,4 +103,4 @@ for state, transition in fsm.items():
     for str_tuple, dest in transition.items():
         processed_fsm[state.value].update({string: dest.value for string in str_tuple})
 
-print(json.dumps(processed_fsm, indent=4))
+fsm_json = json.dumps(processed_fsm)
