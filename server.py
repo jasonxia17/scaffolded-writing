@@ -7,7 +7,7 @@ app = Flask(__name__)
 @app.route("/")
 def display_homepage():
     with open("index.html") as f:
-        return f"<script>fsm_json = JSON.parse('{fsm_json}')</script>" + f.read()
+        return f"<script>fsm_json = {fsm_json};</script>" + f.read()
 
 
 if __name__ == "__main__":
