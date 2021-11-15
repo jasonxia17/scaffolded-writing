@@ -36,9 +36,9 @@
     <div class="row justify-content-center">
       <div class="col-7">
         <h3>Sentence</h3>
-        <p>Let blah blah blah</p>
+        <p id="sentence"></p>
         <div class="input-group mb-3">
-          <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3"
+          <input type="text" class="form-control" id="next-token-input"
             placeholder="Type the next token of your sentence here!">
         </div>
 
@@ -46,8 +46,8 @@
       </div>
       <div class="col-5">
         <h3>Possible next tokens</h3>
-        <ul class="list-group" onselectstart="return false">
-          <li class="list-group-item" aria-current="true">An active item</li>
+        <ul class="list-group" id="next-token-list" onselectstart="return false">
+          <li class="list-group-item">An active item</li>
           <li class="list-group-item">A second item</li>
           <li class="list-group-item">A third item</li>
           <li class="list-group-item">A fourth item</li>
@@ -59,19 +59,48 @@
     <div class="alert alert-secondary mt-5 pt-3" role="alert">
       <h5>Instructions and Tips</h5>
       <ul class="mt-1">
-        <li>Type out the sentence one token at a time. (A token can be a word, phrase, mathematical expression, or
-          punctuation mark.)</li>
+        <li>Type out the sentence one token at a time.
+          (A token can be a word, phrase, mathematical expression, or punctuation mark.)</li>
         <li>At any point in the writing process, only a limited set of possibilities will be accepted as the next token.
-          This
-          scaffolding is intended to help you stay on track, and also to help ensure that the autograder can interpret what you wrote.</li>
-        <li>Hit ENTER when you are done typing the current token.</li>
-        <li>Hit BACKSPACE to delete the last token of the sentence. (Unfortunately, deleting/inserting from the middle
-          of the sentence is not supported.)</li>
-        <li>Click SUBMIT when you are ready to get feedback on your sentence. (Note that you can only submit a complete
-          sentence, i.e. a sentence that ends with a period.)</li>
+          This scaffolding is intended to help you stay on track,
+          and also to help ensure that the autograder can interpret what you wrote.</li>
+        <li>When the token you have typed matches a token in the allowed set,
+          it will automaticlaly be appended to the sentence, and you will be able to move on to the next token.</li>
+        <li>Hit BACKSPACE to delete the last token of the sentence.
+          (Unfortunately, deleting/inserting from the middle of the sentence is not supported.)</li>
+        <li>Click SUBMIT when you are ready to get feedback on your sentence.
+          (Note that you can only submit a complete sentence, i.e. a sentence that ends with a period.)</li>
       </ul>
     </div>
   </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    let curr_state = 1;
+
+    const next_token_list = $('#next-token-list');
+    const next_token_input = $('#next-token-input');
+
+    function updateNextTokenList() {
+      next_token_list.empty();
+      $.each(Object.keys(fsm_json[curr_state]), (_, s) => {
+        $('<li/>')
+          .addClass('list-group-item')
+          .text(s)
+          .appendTo(next_token_list);
+      });
+    }
+    updateNextTokenList();
+
+    next_token_input.keyup(e => {
+      if (e.target.value in fsm_json[curr_state]) {
+        curr_state = fsm_json[curr_state][e.target.value];
+        updateNextTokenList();
+        $('#sentence').text($('#sentence').text() + ' ' + e.target.value);
+        e.target.value = '';
+      }
+    })
+  </script>
 </body>
 
 </html>
