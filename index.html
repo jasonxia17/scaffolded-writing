@@ -32,47 +32,58 @@
     </div>
   </nav>
 
-  <div class="p-4">
-    <div class="row justify-content-center">
-      <div class="col-7">
-        <h3>Sentence</h3>
-        <p id="sentence"></p>
-        <div class="input-group mb-3">
-          <input type="text" class="form-control" id="next-token-input"
-            placeholder="Type the next token of your sentence here!">
-        </div>
-
-        <button type="button" class="btn btn-primary disabled">Submit</button>
-      </div>
-      <div class="col-5">
-        <h3>Possible next tokens</h3>
-        <ul class="list-group" id="next-token-list" onselectstart="return false">
-          <li class="list-group-item">An active item</li>
-          <li class="list-group-item">A second item</li>
-          <li class="list-group-item">A third item</li>
-          <li class="list-group-item">A fourth item</li>
-          <li class="list-group-item">And a fifth one</li>
-        </ul>
-      </div>
+  <div class="container">
+    <div class="py-3">
+      <h4>Problem Statement</h4>
+      <p>Write a subproblem definition that can be used as the basis of a dynamic programming algorithm for this
+        problem.</p>
+      <blockquote style="padding-left: 1.4rem;  border-left: 4px solid #dadada;">
+        You are planning a road trip along a highway with n evenly-spaced hotels; the costs of these hotels are provided
+        in the array HotelCosts[1..n], such that HotelCosts[i] is the cost of the Hotel i. Each day, you can either
+        travel to the next hotel, or you can skip a hotel and travel forward by two hotels. Each night, you must stay at
+        a hotel. Furthermore, you have k coupons that allow you to stay at a hotel for free. Describe a dynamic
+        programming algorithm to determine the minimum possible cost of traveling from Hotel 1 to Hotel n.
+      </blockquote>
     </div>
 
-    <div class="alert alert-secondary mt-5 pt-3" role="alert">
-      <h5>Instructions and Tips</h5>
-      <ul class="mt-1">
-        <li>Type out the sentence one token at a time.
-          (A token can be a word, phrase, mathematical expression, or punctuation mark.)</li>
-        <li>At any point in the writing process, only a limited set of possibilities will be accepted as the next token.
-          This scaffolding is intended to help you stay on track,
-          and also to help ensure that the autograder can interpret what you wrote.</li>
-        <li>When the token you have typed matches a token in the allowed set,
-          it will automaticlaly be appended to the sentence, and you will be able to move on to the next token.</li>
-        <li>Hit BACKSPACE to delete the last token of the sentence.
-          (Unfortunately, deleting/inserting from the middle of the sentence is not supported.)</li>
-        <li>Click SUBMIT when you are ready to get feedback on your sentence.
-          (Note that you can only submit a complete sentence, i.e. a sentence that ends with a period.)</li>
-      </ul>
+    <div class="py-3">
+      <h4>Your Response</h4>
+      <p id="sentence"></p>
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" id="next-token-input"
+          placeholder="Type the next token of your sentence here!">
+      </div>
+      <button type="button" class="btn btn-primary disabled">Submit</button>
+      <button type="button" class="btn btn-danger disabled">Delete Last Token</button>
+    </div>
+
+    <div class="py-3">
+      <h4>Possible next tokens</h4>
+      <ul class="list-group list-group-horizontal" id="next-token-list" onselectstart="return false"></ul>
+    </div>
+
+    <div class="py-3">
+      <h4>Feedback</h4>
+      <p>Submit your response in order to receive feedback!</p>
     </div>
   </div>
+
+  <!-- <div class="alert alert-secondary mt-5 pt-3" role="alert">
+    <h5>Instructions and Tips</h5>
+    <ul class="mt-1">
+      <li>Type out the sentence one token at a time.
+        (A token can be a word, phrase, mathematical expression, or punctuation mark.)</li>
+      <li>At any point in the writing process, only a limited set of possibilities will be accepted as the next token.
+        This scaffolding is intended to help you stay on track,
+        and also to help ensure that the autograder can interpret what you wrote.</li>
+      <li>When the token you have typed matches a token in the allowed set,
+        it will automaticlaly be appended to the sentence, and you will be able to move on to the next token.</li>
+      <li>Click DELETE LAST TOKEN to delete the last token of the sentence.
+        (Unfortunately, deleting/inserting from the middle of the sentence is not supported.)</li>
+      <li>Click SUBMIT when you are ready to get feedback on your sentence.
+        (Note that you can only submit a complete sentence, i.e. a sentence that ends with a period.)</li>
+    </ul>
+  </div> -->
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script>
