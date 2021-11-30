@@ -53,8 +53,8 @@
         <input type="text" class="form-control" id="next-token-input"
           placeholder="Type the next token of your sentence here!">
       </div>
-      <button type="button" class="btn btn-primary disabled">Submit</button>
-      <button type="button" class="btn btn-danger disabled">Delete Last Token</button>
+      <button type="button" disabled class="btn btn-primary" id="submit">Submit</button>
+      <button type="button" disabled class="btn btn-danger" id="delete">Delete Last Token</button>
     </div>
 
     <div class="py-3">
@@ -88,12 +88,12 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script>
     let curr_state = 1;
-
-    const next_token_list = $('#next-token-list');
-    const next_token_input = $('#next-token-input');
+    let entered_tokens = [];
 
     function updateNextTokenList() {
+      const next_token_list = $('#next-token-list');
       next_token_list.empty();
+
       $.each(Object.keys(fsm_json[curr_state]), (_, s) => {
         $('<li/>')
           .addClass('list-group-item')
@@ -103,14 +103,30 @@
     }
     updateNextTokenList();
 
-    next_token_input.keyup(e => {
-      if (e.target.value in fsm_json[curr_state]) {
-        curr_state = fsm_json[curr_state][e.target.value];
-        updateNextTokenList();
-        $('#sentence').text($('#sentence').text() + ' ' + e.target.value);
-        e.target.value = '';
+    function handleTokenEnteredOrDeleted() {
+      $('#sentence').text(entered_tokens.join(' ').replace(' ,', ',').replace(' .', '.'));
+      $('#delete').prop('disabled', entered_tokens.length === 0);
+      $('#submit').prop('disabled', entered_tokens[entered_tokens.length - 1] !== '.');
+
+      curr_state = 1;
+      for (const token of entered_tokens) {
+        curr_state = fsm_json[curr_state][token];
       }
-    })
+      updateNextTokenList();
+    }
+
+    $('#next-token-input').keyup(e => {
+      if (e.target.value in fsm_json[curr_state]) {
+        entered_tokens.push(e.target.value);
+        e.target.value = '';
+        handleTokenEnteredOrDeleted();
+      }
+    });
+
+    $('#delete').click(e => {
+      entered_tokens.pop();
+      handleTokenEnteredOrDeleted();
+    });
   </script>
 </body>
 
