@@ -4,6 +4,11 @@ from hotel_coupon_fsm import fsm_json
 app = Flask(__name__)
 
 
+@app.route("/submit", methods=["POST"])
+def handle_submit():
+    return "feedback placeholder"
+
+
 @app.route("/")
 def display_homepage():
     with open("index.html") as f:

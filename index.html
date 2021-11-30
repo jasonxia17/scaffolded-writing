@@ -65,7 +65,7 @@
 
     <div class="py-3">
       <h4>Feedback</h4>
-      <p>Submit your response in order to receive feedback!</p>
+      <p id="feedback">Submit your response in order to receive feedback!</p>
     </div>
   </div>
 
@@ -129,8 +129,9 @@
     }
 
     $('#next-token-input').keyup(e => {
-      if (e.target.value in fsm_json[curr_state]) {
-        entered_tokens.push(e.target.value);
+      const processed_input = e.target.value.trim()
+      if (processed_input in fsm_json[curr_state]) {
+        entered_tokens.push(processed_input);
         e.target.value = '';
         handleTokenEnteredOrDeleted();
       }
@@ -139,6 +140,20 @@
     $('#delete').click(e => {
       entered_tokens.pop();
       handleTokenEnteredOrDeleted();
+    });
+
+    $('#submit').click(async e => {
+      const response = await fetch('/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(entered_tokens)
+      });
+
+      const feedback = await response.text();
+
+      $('#feedback').text(feedback);
     });
   </script>
 </body>
