@@ -1,45 +1,50 @@
-from enum import Enum, auto
+from enum import Enum, auto, unique
 import json
 from typing import Dict, Tuple
 
 
+@unique
 class State(Enum):
+    # State names describe the role played by the possible next tokens in that state
     START = auto()
     END = auto()
 
-    BEFORE_DECLARE = auto()
-    AFTER_DECLARE = auto()
-    AFTER_TO_BE = auto()
+    FUNCTION_DECLARATION = auto()
+    TO_BE = auto()
+    THE = auto()
 
-    BEFORE_OUTPUT_QUANTITY = auto()
+    OUTPUT_EXTREMAL_MODIFIER = auto()
     AFTER_EXTREMAL_WORD = auto()
-    AFTER_POSSIBLE_OR_TOTAL = auto()
-    AFTER_OUTPUT_QUANTITY = auto()
+    OUTPUT_QUANTITY = auto()
+    PREPOSITION = auto()
 
     OUTPUT_QUANTITY_DISTRACTOR_1 = auto()
     OUTPUT_QUANTITY_DISTRACTOR_2 = auto()
 
-    BEFORE_TRAVELING = auto()
+    SUBPROBLEM_OBJECT = auto()
+    # This is the part of the original problem that the subproblem is focused on
+    # e.g. a prefix, suffix, subarray, subtree, etc.
 
-    BEFORE_TRAVEL_ORIGIN = auto()
-    AFTER_TRAVEL_ORIGIN = auto()
-    BEFORE_TRAVEL_DESTINATION = auto()
-    AFTER_TRAVEL_DESTINATION = auto()
+    TRAVEL_ORIGIN = auto()
+    TO = auto()
+    TRAVEL_DESTINATION = auto()
+    PUNCTUATION = auto()
 
-    AFTER_COMMA = auto()
-    AFTER_UNDER_CONSTRAINT = auto()
-    BEFORE_CONSTRAINT_AMOUNT = auto()
-    BEFORE_CONSTRAINED_OBJECT = auto()
+    UNDER_THE_CONSTRAINT_THAT = auto()
+
+    CONSTRAINED_QUANTITY = auto()
+    CONSTRAINT_COMPARISON_OPERATOR = auto()
+    CONSTRAINT_RHS = auto()
     AFTER_CONSTRAINED_OBJECT = auto()
 
 
 fsm: Dict[State, Dict[Tuple[str, ...], State]] = {}
 
-fsm[State.START] = {("Define",): State.BEFORE_DECLARE}
+fsm[State.START] = {("Define",): State.FUNCTION_DECLARATION}
 
 fsm[State.END] = {}
 
-fsm[State.BEFORE_DECLARE] = {
+fsm[State.FUNCTION_DECLARATION] = {
     (
         "the subproblem",
         "MinCost(i)",
@@ -49,36 +54,36 @@ fsm[State.BEFORE_DECLARE] = {
         "Memo(i)",
         "Memo(i,j)",
         "the subproblem",
-    ): State.AFTER_DECLARE,
+    ): State.TO_BE,
 }
 
-fsm[State.AFTER_DECLARE] = {
-    ("to be",): State.AFTER_TO_BE,
+fsm[State.TO_BE] = {
+    ("to be",): State.THE,
 }
 
-fsm[State.AFTER_TO_BE] = {
-    ("the",): State.BEFORE_OUTPUT_QUANTITY,
+fsm[State.THE] = {
+    ("the",): State.OUTPUT_EXTREMAL_MODIFIER,
 }
 
-fsm[State.BEFORE_OUTPUT_QUANTITY] = {
+fsm[State.OUTPUT_EXTREMAL_MODIFIER] = {
     ("minimum", "maximum"): State.AFTER_EXTREMAL_WORD,
-    ("total",): State.AFTER_POSSIBLE_OR_TOTAL,
-    ("value", "cost", "answer"): State.AFTER_OUTPUT_QUANTITY,
+    ("total",): State.OUTPUT_QUANTITY,
+    ("value", "cost", "answer"): State.PREPOSITION,
     ("number of",): State.OUTPUT_QUANTITY_DISTRACTOR_1,
 }
 
 fsm[State.AFTER_EXTREMAL_WORD] = {
-    ("possible",): State.AFTER_POSSIBLE_OR_TOTAL,
+    ("possible",): State.OUTPUT_QUANTITY,
 }
 
-fsm[State.AFTER_POSSIBLE_OR_TOTAL] = {
-    ("value", "cost", "answer"): State.AFTER_OUTPUT_QUANTITY,
+fsm[State.OUTPUT_QUANTITY] = {
+    ("value", "cost", "answer"): State.PREPOSITION,
     ("number of",): State.OUTPUT_QUANTITY_DISTRACTOR_1,
 }
 
-fsm[State.AFTER_OUTPUT_QUANTITY] = {
+fsm[State.PREPOSITION] = {
     (".",): State.END,
-    ("of", "for"): State.BEFORE_TRAVELING,
+    ("of", "for"): State.SUBPROBLEM_OBJECT,
 }
 
 fsm[State.OUTPUT_QUANTITY_DISTRACTOR_1] = {
@@ -86,15 +91,15 @@ fsm[State.OUTPUT_QUANTITY_DISTRACTOR_1] = {
 }
 
 fsm[State.OUTPUT_QUANTITY_DISTRACTOR_2] = {
-    ("used",): State.AFTER_OUTPUT_QUANTITY,
+    ("used",): State.PREPOSITION,
 }
 
-fsm[State.BEFORE_TRAVELING] = {
-    ("traveling from",): State.BEFORE_TRAVEL_ORIGIN,
+fsm[State.SUBPROBLEM_OBJECT] = {
+    ("traveling from",): State.TRAVEL_ORIGIN,
     ("i.", "i and j."): State.END,
 }
 
-fsm[State.BEFORE_TRAVEL_ORIGIN] = {
+fsm[State.TRAVEL_ORIGIN] = {
     (
         "Hotel 1",
         "Hotel n",
@@ -102,14 +107,14 @@ fsm[State.BEFORE_TRAVEL_ORIGIN] = {
         "Hotel j",
         "Hotel k",
         "the current location",
-    ): State.AFTER_TRAVEL_ORIGIN,
+    ): State.TO,
 }
 
-fsm[State.AFTER_TRAVEL_ORIGIN] = {
-    ("to",): State.BEFORE_TRAVEL_DESTINATION,
+fsm[State.TO] = {
+    ("to",): State.TRAVEL_DESTINATION,
 }
 
-fsm[State.BEFORE_TRAVEL_DESTINATION] = {
+fsm[State.TRAVEL_DESTINATION] = {
     (
         "Hotel 1",
         "Hotel n",
@@ -117,28 +122,28 @@ fsm[State.BEFORE_TRAVEL_DESTINATION] = {
         "Hotel j",
         "Hotel k",
         "the current location",
-    ): State.AFTER_TRAVEL_DESTINATION,
+    ): State.PUNCTUATION,
 }
 
-fsm[State.AFTER_TRAVEL_DESTINATION] = {
+fsm[State.PUNCTUATION] = {
     (".",): State.END,
-    (",",): State.AFTER_COMMA,
+    (",",): State.UNDER_THE_CONSTRAINT_THAT,
 }
 
-fsm[State.AFTER_COMMA] = {
-    ("under the constraint that",): State.AFTER_UNDER_CONSTRAINT,
+fsm[State.UNDER_THE_CONSTRAINT_THAT] = {
+    ("under the constraint that",): State.CONSTRAINT_COMPARISON_OPERATOR,
 }
 
-fsm[State.AFTER_UNDER_CONSTRAINT] = {
-    ("all remaining",): State.BEFORE_CONSTRAINED_OBJECT,
-    ("at least", "at most", "exactly"): State.BEFORE_CONSTRAINT_AMOUNT,
+fsm[State.CONSTRAINT_COMPARISON_OPERATOR] = {
+    ("all remaining",): State.CONSTRAINED_QUANTITY,
+    ("at least", "at most", "exactly"): State.CONSTRAINT_RHS,
 }
 
-fsm[State.BEFORE_CONSTRAINT_AMOUNT] = {
-    ("0", "1", "i", "j", "k", "n"): State.BEFORE_CONSTRAINED_OBJECT,
+fsm[State.CONSTRAINT_RHS] = {
+    ("0", "1", "i", "j", "k", "n"): State.CONSTRAINED_QUANTITY,
 }
 
-fsm[State.BEFORE_CONSTRAINED_OBJECT] = {
+fsm[State.CONSTRAINED_QUANTITY] = {
     ("hotels", "coupons"): State.AFTER_CONSTRAINED_OBJECT,
 }
 
