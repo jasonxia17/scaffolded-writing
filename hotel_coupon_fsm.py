@@ -14,12 +14,8 @@ class State(Enum):
     THE = auto()
 
     OUTPUT_EXTREMAL_MODIFIER = auto()
-    AFTER_EXTREMAL_WORD = auto()
     OUTPUT_QUANTITY = auto()
     PREPOSITION = auto()
-
-    OUTPUT_QUANTITY_DISTRACTOR_1 = auto()
-    OUTPUT_QUANTITY_DISTRACTOR_2 = auto()
 
     SUBPROBLEM_OBJECT = auto()
     # This is the part of the original problem that the subproblem is focused on
@@ -35,7 +31,10 @@ class State(Enum):
     CONSTRAINED_QUANTITY = auto()
     CONSTRAINT_COMPARISON_OPERATOR = auto()
     CONSTRAINT_RHS = auto()
-    AFTER_CONSTRAINED_OBJECT = auto()
+
+
+def concatenate():
+    pass
 
 
 fsm: Dict[State, Dict[Tuple[str, ...], State]] = {}
@@ -44,6 +43,8 @@ fsm[State.START] = {("Define",): State.FUNCTION_DECLARATION}
 
 fsm[State.END] = {}
 
+# TODO: populate this list with more options, to avoid giving away that
+# "minimum possible cost" is the correct token later in the sentence.
 fsm[State.FUNCTION_DECLARATION] = {
     (
         "the subproblem",
@@ -53,7 +54,6 @@ fsm[State.FUNCTION_DECLARATION] = {
         "DP(i,j)",
         "Memo(i)",
         "Memo(i,j)",
-        "the subproblem",
     ): State.TO_BE,
 }
 
@@ -66,63 +66,46 @@ fsm[State.THE] = {
 }
 
 fsm[State.OUTPUT_EXTREMAL_MODIFIER] = {
-    ("minimum", "maximum"): State.AFTER_EXTREMAL_WORD,
-    ("total",): State.OUTPUT_QUANTITY,
-    ("value", "cost", "answer"): State.PREPOSITION,
-    ("number of",): State.OUTPUT_QUANTITY_DISTRACTOR_1,
+    ("minimum possible", "maximum possible", "total"): State.OUTPUT_QUANTITY,
 }
 
-fsm[State.AFTER_EXTREMAL_WORD] = {
-    ("possible",): State.OUTPUT_QUANTITY,
-}
+relevant_quantities = ("cost", "number of hotels used", "number of coupons used")
 
 fsm[State.OUTPUT_QUANTITY] = {
-    ("value", "cost", "answer"): State.PREPOSITION,
-    ("number of",): State.OUTPUT_QUANTITY_DISTRACTOR_1,
+    ("answer", "value") + relevant_quantities: State.PREPOSITION,
 }
 
 fsm[State.PREPOSITION] = {
     (".",): State.END,
-    ("of", "for"): State.SUBPROBLEM_OBJECT,
+    ("of", "for", "in"): State.SUBPROBLEM_OBJECT,
 }
 
-fsm[State.OUTPUT_QUANTITY_DISTRACTOR_1] = {
-    ("hotels", "coupons"): State.OUTPUT_QUANTITY_DISTRACTOR_2,
-}
-
-fsm[State.OUTPUT_QUANTITY_DISTRACTOR_2] = {
-    ("used",): State.PREPOSITION,
-}
-
+# TODO: move "from" to later token
 fsm[State.SUBPROBLEM_OBJECT] = {
-    ("traveling from",): State.TRAVEL_ORIGIN,
+    ("a trip from",): State.TRAVEL_ORIGIN,
     ("i.", "i and j."): State.END,
 }
 
+possible_locations = (
+    "Hotel 1",
+    "Hotel n",
+    "Hotel i",
+    "Hotel j",
+    "Hotel k",
+    "the current location",
+)
+
 fsm[State.TRAVEL_ORIGIN] = {
-    (
-        "Hotel 1",
-        "Hotel n",
-        "Hotel i",
-        "Hotel j",
-        "Hotel k",
-        "the current location",
-    ): State.TO,
+    possible_locations: State.TO,
 }
 
+# TODO: merge "to" into next token
 fsm[State.TO] = {
     ("to",): State.TRAVEL_DESTINATION,
 }
 
 fsm[State.TRAVEL_DESTINATION] = {
-    (
-        "Hotel 1",
-        "Hotel n",
-        "Hotel i",
-        "Hotel j",
-        "Hotel k",
-        "the current location",
-    ): State.PUNCTUATION,
+    possible_locations: State.PUNCTUATION,
 }
 
 fsm[State.PUNCTUATION] = {
@@ -131,24 +114,21 @@ fsm[State.PUNCTUATION] = {
 }
 
 fsm[State.UNDER_THE_CONSTRAINT_THAT] = {
-    ("under the constraint that",): State.CONSTRAINT_COMPARISON_OPERATOR,
+    ("under the constraint that",): State.CONSTRAINED_QUANTITY,
+}
+
+# TODO: add "the" before quantities
+fsm[State.CONSTRAINED_QUANTITY] = {
+    relevant_quantities: State.CONSTRAINT_COMPARISON_OPERATOR,
 }
 
 fsm[State.CONSTRAINT_COMPARISON_OPERATOR] = {
-    ("all remaining",): State.CONSTRAINED_QUANTITY,
-    ("at least", "at most", "exactly"): State.CONSTRAINT_RHS,
+    ("is at least", "is at most", "is exactly"): State.CONSTRAINT_RHS,
 }
 
+# TODO: add period
 fsm[State.CONSTRAINT_RHS] = {
-    ("0", "1", "i", "j", "k", "n"): State.CONSTRAINED_QUANTITY,
-}
-
-fsm[State.CONSTRAINED_QUANTITY] = {
-    ("hotels", "coupons"): State.AFTER_CONSTRAINED_OBJECT,
-}
-
-fsm[State.AFTER_CONSTRAINED_OBJECT] = {
-    ("are used.",): State.END,
+    ("0", "1", "i", "j", "k", "n"): State.END,
 }
 
 assert fsm.keys() == set(State)
