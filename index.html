@@ -58,8 +58,8 @@
     </div>
 
     <div class="py-3">
-      <h5>Possible next tokens</h5>
-      <ul class="list-group list-group-horizontal" id="next-token-list" onselectstart="return false"></ul>
+      <h4>Possible next tokens</h4>
+      <h4 id="next-token-list" onselectstart="return false"></h4>
       <div id="no-more-tokens-message"></div>
     </div>
 
@@ -102,8 +102,9 @@
       no_more_tokens_message.empty();
 
       $.each(Object.keys(fsm_json[curr_state]), (_, s) => {
-        $('<li/>')
-          .addClass('list-group-item')
+        $('<span/>')
+          .addClass('badge badge-dark m-2')
+          .css('cursor', 'default')
           .text(s)
           .appendTo(next_token_list);
       });
