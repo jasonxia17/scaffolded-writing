@@ -1,6 +1,7 @@
 from enum import Enum, auto, unique
+import itertools
 import json
-from typing import Dict, Tuple
+from typing import Dict, Sequence, Tuple
 
 
 @unique
@@ -17,12 +18,11 @@ class State(Enum):
     OUTPUT_QUANTITY = auto()
     PREPOSITION = auto()
 
-    SUBPROBLEM_OBJECT = auto()
+    PREPOSITION_OBJECT = auto()
     # This is the part of the original problem that the subproblem is focused on
     # e.g. a prefix, suffix, subarray, subtree, etc.
 
     TRAVEL_ORIGIN = auto()
-    TO = auto()
     TRAVEL_DESTINATION = auto()
     PUNCTUATION = auto()
 
@@ -33,8 +33,10 @@ class State(Enum):
     CONSTRAINT_RHS = auto()
 
 
-def concatenate():
-    pass
+def concatenate(
+    prefixes: Sequence[str], suffixes: Sequence[str], separator=" "
+) -> Tuple[str, ...]:
+    return tuple(map(separator.join, itertools.product(prefixes, suffixes)))
 
 
 fsm: Dict[State, Dict[Tuple[str, ...], State]] = {}
@@ -45,16 +47,16 @@ fsm[State.END] = {}
 
 # TODO: populate this list with more options, to avoid giving away that
 # "minimum possible cost" is the correct token later in the sentence.
+possible_function_names = ("DP", "Memo") + concatenate(
+    ["Min", "Max"], ["Cost", "Hotels", "Coupons"], separator=""
+)
+
+possible_function_declarations = ("the subproblem",) + concatenate(
+    possible_function_names, ["(i)", "(i,j)"], separator=""
+)
+
 fsm[State.FUNCTION_DECLARATION] = {
-    (
-        "the subproblem",
-        "MinCost(i)",
-        "MinCost(i,j)",
-        "DP(i)",
-        "DP(i,j)",
-        "Memo(i)",
-        "Memo(i,j)",
-    ): State.TO_BE,
+    possible_function_declarations: State.TO_BE,
 }
 
 fsm[State.TO_BE] = {
@@ -77,35 +79,29 @@ fsm[State.OUTPUT_QUANTITY] = {
 
 fsm[State.PREPOSITION] = {
     (".",): State.END,
-    ("of", "for", "in"): State.SUBPROBLEM_OBJECT,
+    ("of", "for", "in", "while"): State.PREPOSITION_OBJECT,
 }
 
-# TODO: move "from" to later token
-fsm[State.SUBPROBLEM_OBJECT] = {
-    ("a trip from",): State.TRAVEL_ORIGIN,
+fsm[State.PREPOSITION_OBJECT] = {
+    ("traveling",): State.TRAVEL_ORIGIN,
     ("i.", "i and j."): State.END,
 }
 
 possible_locations = (
+    "the current location",
     "Hotel 1",
     "Hotel n",
     "Hotel i",
     "Hotel j",
     "Hotel k",
-    "the current location",
 )
 
 fsm[State.TRAVEL_ORIGIN] = {
-    possible_locations: State.TO,
-}
-
-# TODO: merge "to" into next token
-fsm[State.TO] = {
-    ("to",): State.TRAVEL_DESTINATION,
+    concatenate(["from"], possible_locations): State.TRAVEL_DESTINATION,
 }
 
 fsm[State.TRAVEL_DESTINATION] = {
-    possible_locations: State.PUNCTUATION,
+    concatenate(["to"], possible_locations): State.PUNCTUATION,
 }
 
 fsm[State.PUNCTUATION] = {
@@ -117,18 +113,16 @@ fsm[State.UNDER_THE_CONSTRAINT_THAT] = {
     ("under the constraint that",): State.CONSTRAINED_QUANTITY,
 }
 
-# TODO: add "the" before quantities
 fsm[State.CONSTRAINED_QUANTITY] = {
-    relevant_quantities: State.CONSTRAINT_COMPARISON_OPERATOR,
+    concatenate(["the"], relevant_quantities): State.CONSTRAINT_COMPARISON_OPERATOR,
 }
 
 fsm[State.CONSTRAINT_COMPARISON_OPERATOR] = {
     ("is at least", "is at most", "is exactly"): State.CONSTRAINT_RHS,
 }
 
-# TODO: add period
 fsm[State.CONSTRAINT_RHS] = {
-    ("0", "1", "i", "j", "k", "n"): State.END,
+    concatenate(["0", "1", "i", "j", "k", "n"], ["."], separator=""): State.END,
 }
 
 assert fsm.keys() == set(State)
