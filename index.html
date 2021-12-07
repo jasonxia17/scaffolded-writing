@@ -66,6 +66,9 @@
     <div class="py-3">
       <h4>Feedback</h4>
       <p id="feedback">Submit your response in order to receive feedback!</p>
+      <div class="spinner-border text-secondary" style="display: none;" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
     </div>
   </div>
 
@@ -144,6 +147,9 @@
     });
 
     $('#submit').click(async e => {
+      $('#feedback').text('');
+      $('.spinner-border').show();
+
       const response = await fetch('/submit', {
         method: 'POST',
         headers: {
@@ -154,7 +160,10 @@
 
       const feedback = await response.text();
 
-      $('#feedback').text(feedback);
+      setTimeout(() => {
+        $('#feedback').text(feedback);
+        $('.spinner-border').hide();
+      }, 1500)
     });
   </script>
 </body>
