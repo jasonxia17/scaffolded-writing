@@ -1,5 +1,6 @@
 from hotel_coupon_fsm import State, fsm
 import inspect
+import itertools
 from typing import Callable, Dict, List, Optional
 
 
@@ -21,6 +22,7 @@ class Grader:
         print(self.parsed_sentence)
 
     def generate_feedback(self) -> str:
+        # TODO: move list of constraints into separate get_constraints_in_order function
         constraints: List[Callable[[], Optional[str]]] = [
             self.check_output_quantity,
             self.check_extremal_modifier,
@@ -28,6 +30,7 @@ class Grader:
             self.check_no_undefined_variables,
             self.check_all_parameters_used,
             self.check_preposition_object,
+            self.check_each_parameter_used_only_once,
         ]
 
         # check, because it's easy to forget to update this list
@@ -57,7 +60,7 @@ class Grader:
         extremal_modifier = self.parsed_sentence[State.OUTPUT_EXTREMAL_MODIFIER]
 
         if extremal_modifier == "total":
-            return f'What do you mean by "total cost"? There can be multiple possible total costs, depending on what choices you makes.'
+            return f'What do you mean by "total cost"? Your trip can have multiple possible total costs, depending on what choices you make.'
         elif "maximum" in extremal_modifier:
             return f"Are you sure that a subproblem which tries to maximize cost is useful for solving the original problem?"
         return None
@@ -80,6 +83,7 @@ class Grader:
     def check_no_undefined_variables(self) -> Optional[str]:
         function_declaration = self.parsed_sentence[State.FUNCTION_DECLARATION]
 
+        # TODO: don't hardcode function parameter names
         is_j_allowed = "(i,j)" in function_declaration
         if is_j_allowed:
             return None
@@ -109,7 +113,32 @@ class Grader:
         if preposition_object in ("i", "i and j"):
             return f'What exactly do you mean by "{quantity} {preposition} {preposition_object}"? Can you be more specific about what the function parameters represent in the context of your subproblem?'
 
-        return None
+        return
+
+    def check_each_parameter_used_only_once(self) -> Optional[str]:
+        states_to_check = {
+            "travel origin": State.TRAVEL_ORIGIN,
+            "travel destination": State.TRAVEL_DESTINATION,
+            "constraint on the number of coupons used": State.CONSTRAINT_RHS,
+        }
+
+        tokens_to_check = {
+            field: self.parsed_sentence[state].split() for field, state in states_to_check.items()
+        }
+
+        for (field1, token1), (field2, token2) in itertools.combinations(
+            tokens_to_check.items(), 2
+        ):
+            for param in ["i", "j"]:
+                if param in token1 and param in token2:
+                    return f"You used the parameter {param} to denote both the {field1} and the {field2}. It doesn't make sense to tie both of these to the same variable, since they aren't necessarily the same."
+
+    # check origin is Hotel 1, i, or j. sample feedback: The original problem is asking for the cost of a trip starting from Hotel 1. However, it's impossible to compute the cost of a trip starting from Hotel 1 using your subproblem.
+    # desitination is Hotel n, i, or j...
+    # check at least one of {origin, destination} contains variable, so it can reduce
+    # "under the constraint" exists, and it's about coupons
+    # "at least" is bad, and constraint_rhs should be i or j. sample feedback: The original problem is asking for the cost of a trip that uses at most k coupons. However, it's impossible to compute this using your subproblem.
+    # constraint_rhs = k needs a special feedback message about failure to reduce to smaller subproblem
 
 
 print(Grader(["Define", "MinCost(i)", "to be", "the", "total", "value", "."]).generate_feedback())
