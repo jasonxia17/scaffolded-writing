@@ -26,7 +26,16 @@ class Grader:
             self.check_extremal_modifier,
             self.check_function_declaration,
             self.check_no_undefined_variables,
+            self.check_all_parameters_used,
+            self.check_preposition_object,
         ]
+
+        # check, because it's easy to forget to update this list
+        assert set(constraints) == {
+            func
+            for name, func in inspect.getmembers(self, predicate=inspect.ismethod)
+            if name.startswith("check_")
+        }
 
         for constraint_function in constraints:
             feedback = constraint_function()
@@ -73,10 +82,34 @@ class Grader:
 
         is_j_allowed = "(i,j)" in function_declaration
         if is_j_allowed:
-            return
+            return None
 
         if any("j" in token.split() for token in self.parsed_sentence.values()):
             return "You referred to the variable j, which is not declared as a function parameter nor defined in the original problem."
+
+        return None
+
+    def check_all_parameters_used(self) -> Optional[str]:
+        function_declaration = self.parsed_sentence[State.FUNCTION_DECLARATION]
+        parameters = ["i"]
+        if "(i,j)" in function_declaration:
+            parameters.append("j")
+
+        for param in parameters:
+            if all(param not in token.split() for token in self.parsed_sentence.values()):
+                return f"Your function declaration includes the parameter {param}, but your subproblem definition doesn't explain how {param} affects the output of the function."
+
+        return None
+
+    def check_preposition_object(self) -> Optional[str]:
+        quantity = self.parsed_sentence[State.OUTPUT_QUANTITY]
+        preposition = self.parsed_sentence[State.PREPOSITION]
+        preposition_object = self.parsed_sentence[State.PREPOSITION_OBJECT]
+
+        if preposition_object in ("i", "i and j"):
+            return f'What exactly do you mean by "{quantity} {preposition} {preposition_object}"? Can you be more specific about what the function parameters represent in the context of your subproblem?'
+
+        return None
 
 
 print(Grader(["Define", "MinCost(i)", "to be", "the", "total", "value", "."]).generate_feedback())
