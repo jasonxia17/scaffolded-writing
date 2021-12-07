@@ -33,6 +33,11 @@ class Grader:
             self.check_preposition_object,
             self.check_each_parameter_used_only_once,
             self.check_no_vague_phrases_where_there_should_be_an_explicit_parameter,
+            self.check_origin_can_be_used_to_determine_final_answer,
+            self.check_destination_can_be_used_to_determine_final_answer,
+            self.check_hotels_can_reduce_to_smaller_subproblem,
+            self.check_coupon_constraint_can_be_used_to_determine_final_answer,
+            self.check_coupons_can_reduce_to_smaller_subproblem,
         ]
 
         # check, because it's easy to forget to update this list
@@ -150,12 +155,44 @@ class Grader:
 
         return None
 
-    # check origin is Hotel 1, i, or j. sample feedback: The original problem is asking for the cost of a trip starting from Hotel 1. However, it's impossible to compute the cost of a trip starting from Hotel 1 using your subproblem.
-    # desitination is Hotel n, i, or j...
-    # check at least one of {origin, destination} contains variable, so it can reduce
-    # "under the constraint" exists, and it's about coupons
-    # "at least" is bad, and constraint_rhs should be i or j. sample feedback: The original problem is asking for the cost of a trip that uses at most k coupons. However, it's impossible to compute this using your subproblem.
-    # constraint_rhs = k needs a special feedback message about failure to reduce to smaller subproblem
+    def check_origin_can_be_used_to_determine_final_answer(self) -> Optional[str]:
+        origin = self.parsed_sentence[State.TRAVEL_ORIGIN]
+
+        if all(symbol not in origin.split() for symbol in ["1", "i", "j"]):
+            return f"The original problem is asking for the cost of a trip starting from Hotel 1. However, it's impossible to compute the cost of a trip starting from Hotel 1 using your subproblem."
+
+        return None
+
+    def check_destination_can_be_used_to_determine_final_answer(self) -> Optional[str]:
+        destination = self.parsed_sentence[State.TRAVEL_DESTINATION]
+
+        if all(symbol not in destination.split() for symbol in ["n", "i", "j"]):
+            return f"The original problem is asking for the cost of a trip ending at Hotel n. However, it's impossible to compute the cost of a trip ending at Hotel n using your subproblem."
+
+        return None
+
+    def check_hotels_can_reduce_to_smaller_subproblem(self) -> Optional[str]:
+        origin = self.parsed_sentence[State.TRAVEL_ORIGIN]
+        destination = self.parsed_sentence[State.TRAVEL_DESTINATION]
+
+        if all(
+            param not in token.split() for param in ["i", "j"] for token in [origin, destination]
+        ):
+            return f"Make sure that your subproblem can be reduced to smaller instances of itself. Currently, it can only be used to analyze trips from Hotel 1 to Hotel n; you need to incorporate a parameter that allows the size of this range to be reduced."
+
+        return None
+
+    def check_coupon_constraint_can_be_used_to_determine_final_answer(self) -> Optional[str]:
+        if (
+            "coupons" not in self.parsed_sentence[State.CONSTRAINED_QUANTITY]
+            or self.parsed_sentence[State.CONSTRAINT_COMPARISON_OPERATOR] == "is at least"
+            or self.parsed_sentence[State.CONSTRAINT_RHS] not in ("i", "j", "k")
+        ):
+            return f"The original problem is asking for the cost of a trip that uses at most k coupons. However, it's impossible to impose this constraint using your subproblem."
+
+    def check_coupons_can_reduce_to_smaller_subproblem(self) -> Optional[str]:
+        if self.parsed_sentence[State.CONSTRAINT_RHS] == "k":
+            return f"Make sure that your subproblem can be reduced to smaller instances of itself. For example, if we have k coupons and we decide to use a coupon, then we would need to call a subproblem that analyzes trips that use k-1 coupons, but your subproblem definition does not allow us to do that."
 
 
 print(Grader(["Define", "MinCost(i)", "to be", "the", "total", "value", "."]).generate_feedback())
