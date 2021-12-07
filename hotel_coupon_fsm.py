@@ -33,12 +33,10 @@ class State(Enum):
     CONSTRAINT_RHS = auto()
 
 
-def concatenate(
-    prefixes: Sequence[str], suffixes: Sequence[str], separator=" "
-) -> Tuple[str, ...]:
+def concatenate(prefixes: Sequence[str], suffixes: Sequence[str], separator=" ") -> Tuple[str, ...]:
     return tuple(map(separator.join, itertools.product(prefixes, suffixes)))
 
-
+# TODO: make FSM class to get rid of this awkward tuple notation?
 fsm: Dict[State, Dict[Tuple[str, ...], State]] = {}
 
 fsm[State.START] = {("Define",): State.FUNCTION_DECLARATION}
@@ -122,7 +120,11 @@ fsm[State.CONSTRAINT_COMPARISON_OPERATOR] = {
 }
 
 fsm[State.CONSTRAINT_RHS] = {
-    concatenate(["0", "1", "i", "j", "k", "n"], ["."], separator=""): State.END,
+    concatenate(
+        ["the number of coupons we have remaining", "0", "1", "i", "j", "k", "n"],
+        ["."],
+        separator="",
+    ): State.END,
 }
 
 assert fsm.keys() == set(State)
