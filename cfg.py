@@ -1,6 +1,6 @@
 import json
 from nltk.grammar import CFG, is_nonterminal, is_terminal
-from nltk import Tree
+from nltk.parse import RecursiveDescentParser
 
 cfg = CFG.fromstring("""
     START -> "Define" FUNCTION "to be" "the" EXTREMAL_MODIFIER QUANTITY PREPOSITIONAL_PHRASE CONSTRAINT_CLAUSE "."
@@ -35,3 +35,11 @@ cfg_as_json = {
 }
 
 print(json.dumps(cfg_as_json))
+
+sentence = ["Define", "MinCost(i,j)", "to be", "the", "minimum possible", "cost", "of", "traveling",
+    "from", "Hotel i", "to", "Hotel n", ",", "under the constraint that", "the", "number of coupons used", "is",
+    "at most", "j", "."]
+
+parser = RecursiveDescentParser(cfg)
+
+print(parser.parse_one(sentence))
