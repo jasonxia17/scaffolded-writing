@@ -92,10 +92,6 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="static/next_token_prediction.js"></script>
   <script>
-    const START_STATE = 1;
-    const END_STATE = 2;
-
-    let curr_state = START_STATE;
     let entered_tokens = [];
 
     function updateNextTokenList() {
@@ -105,37 +101,38 @@
       next_token_list.empty();
       no_more_tokens_message.empty();
 
-      $.each(Object.keys(fsm_json[curr_state]), (_, s) => {
+      const possible_next_tokens = getPossibleNextTokens(entered_tokens, cfg);
+
+      for (const token of possible_next_tokens) {
         $('<span/>')
           .addClass('badge badge-dark m-2')
           .css('cursor', 'default')
-          .text(s)
+          .text(token)
           .appendTo(next_token_list);
-      });
+      }
 
-      if (jQuery.isEmptyObject(fsm_json[curr_state])) {
+      if (possible_next_tokens.size === 0) {
         no_more_tokens_message.text('You have completed your sentence. No more tokens can be appended.');
+        $('#submit').prop('disabled', false);
       }
     }
 
     updateNextTokenList();
 
     function handleTokenEnteredOrDeleted() {
-      curr_state = 1;
-      for (const token of entered_tokens) {
-        curr_state = fsm_json[curr_state][token];
-      }
-
       $('#sentence').text(entered_tokens.join(' ').replace(' ,', ',').replace(' .', '.'));
       $('#delete').prop('disabled', entered_tokens.length === 0);
-      $('#submit').prop('disabled', curr_state !== END_STATE);
 
       updateNextTokenList();
     }
 
-    $('#next-token-input').keyup(e => {
+    $('#next-token-input').keypress(e => {
+      if (e.key !== "Enter") {
+        return;
+      }
+
       const processed_input = e.target.value.trim()
-      if (processed_input in fsm_json[curr_state]) {
+      if (getPossibleNextTokens(entered_tokens, cfg).has(processed_input)) {
         entered_tokens.push(processed_input);
         e.target.value = '';
         handleTokenEnteredOrDeleted();

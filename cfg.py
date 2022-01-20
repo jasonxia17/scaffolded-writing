@@ -1,4 +1,3 @@
-import json
 from nltk.grammar import CFG, is_nonterminal, is_terminal
 from nltk.parse import RecursiveDescentParser
 
@@ -33,8 +32,6 @@ cfg_as_json = {
         for prod in cfg.productions()
     ]
 }
-
-print(json.dumps(cfg_as_json))
 
 sentence = ["Define", "MinCost(i,j)", "to be", "the", "minimum possible", "cost", "of", "traveling",
     "from", "Hotel i", "to", "Hotel n", ",", "under the constraint that", "the", "number of coupons used", "is",

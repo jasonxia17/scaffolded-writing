@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
-from hotel_coupon_fsm import fsm_json
+import json
+
+from cfg import cfg_as_json
 from hotel_coupon_grader import Grader
 
 app = Flask(__name__)
@@ -19,7 +21,7 @@ def handle_submit() -> str:
 @app.route("/")
 def display_homepage() -> str:
     with open("index.html") as f:
-        return f"<script>fsm_json = {fsm_json};</script>" + f.read()
+        return f"<script>cfg = {json.dumps(cfg_as_json)};</script>" + f.read()
 
 
 if __name__ == "__main__":
