@@ -93,6 +93,7 @@
   <script>
     const entered_tokens = [];
 
+
     function updateNextTokenList() {
       const next_token_list = $('#next-token-list');
       const no_more_tokens_message = $('#no-more-tokens-message');
@@ -113,6 +114,8 @@
       if (possible_next_tokens.size === 0) {
         no_more_tokens_message.text('You have completed your sentence. No more tokens can be appended.');
         $('#submit').prop('disabled', false);
+      } else {
+        $('#submit').prop('disabled', true);
       }
     }
 
