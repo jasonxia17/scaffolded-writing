@@ -123,8 +123,11 @@
       updateNextTokenList();
     }
 
-    $('#next-token-input').keydown(e => {
+    // need to do this because jquery doesn't support repeat
+    document.getElementById('next-token-input').addEventListener("keydown", e => {
       if (e.key === "Enter") {
+        e.preventDefault();
+
         const processed_input = e.target.value.trim()
         if (getPossibleNextTokens(entered_tokens, cfg).has(processed_input)) {
           entered_tokens.push(processed_input);
@@ -132,7 +135,7 @@
           handleTokenEnteredOrDeleted();
         }
 
-      } else if (e.key === "Backspace" && e.target.value.length === 0) {
+      } else if (e.key === "Backspace" && e.target.value.length === 0 && !e.repeat) {
         entered_tokens.pop();
         handleTokenEnteredOrDeleted();
       }
