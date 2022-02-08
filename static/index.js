@@ -28,7 +28,7 @@ function updateNextTokenList() {
 updateNextTokenList();
 
 function handleTokenEnteredOrDeleted() {
-    $('#sentence').text(entered_tokens.join(' ').replace(' ,', ',').replace(' .', '.'));
+    $('#sentence').text(entered_tokens.join(' ').replaceAll(' ,', ',').replaceAll(' .', '.'));
     updateNextTokenList();
 }
 
