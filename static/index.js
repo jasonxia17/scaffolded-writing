@@ -29,6 +29,7 @@ updateNextTokenList();
 
 function handleTokenEnteredOrDeleted() {
     $('#sentence').text(entered_tokens.join(' ').replaceAll(' ,', ',').replaceAll(' .', '.'));
+    $('input#token-list-json').val(JSON.stringify(entered_tokens));
     updateNextTokenList();
 }
 
@@ -45,8 +46,8 @@ document.getElementById('next-token-input').addEventListener("keydown", e => {
     }
 
     } else if (e.key === "Backspace" && e.target.value.length === 0 && !e.repeat) {
-    entered_tokens.pop();
-    handleTokenEnteredOrDeleted();
+        entered_tokens.pop();
+        handleTokenEnteredOrDeleted();
     }
 });
 
