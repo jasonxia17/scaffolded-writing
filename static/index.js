@@ -23,13 +23,15 @@ function updateNextTokenList() {
     }
 }
 
-updateNextTokenList();
-
 function handleTokenEnteredOrDeleted() {
     $('#sentence').text(entered_tokens.join(' ').replaceAll(' ,', ',').replaceAll(' .', '.'));
     $('input#token-list-json').val(JSON.stringify(entered_tokens));
     updateNextTokenList();
 }
+
+// need to do this immediately if entered_tokens starts off non-empty
+// e.g. this happens on the second attempt or later
+handleTokenEnteredOrDeleted();
 
 // need to do this because jquery doesn't support repeat
 document.getElementById('next-token-input').addEventListener("keydown", e => {
