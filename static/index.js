@@ -1,5 +1,3 @@
-const entered_tokens = [];
-
 function updateNextTokenList() {
     const next_token_list = $('#next-token-list');
     const no_more_tokens_message = $('#no-more-tokens-message');
