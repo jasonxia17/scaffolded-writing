@@ -16,10 +16,12 @@ function updateNextTokenList() {
     }
 
     if (possible_next_tokens.size === 0) {
-    no_more_tokens_message.text('You have completed your sentence. No more tokens can be appended.');
-    $('#submit').prop('disabled', false);
+        no_more_tokens_message.text('You have completed your sentence. No more tokens can be appended.');
+        $('#submit').prop('disabled', false);
+        // TODO: it's possible for the student's response to be complete even if more tokens can be appended.
+        // The submit button still needs to be enabled in this case.
     } else {
-    $('#submit').prop('disabled', true);
+        $('#submit').prop('disabled', true);
     }
 }
 
