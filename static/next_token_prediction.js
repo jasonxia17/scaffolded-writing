@@ -5,7 +5,7 @@ function getPossibleNextTokens(input, cfg) {
             remainingInput: input.slice().reverse()
         }];
     var _loop_1 = function () {
-        var curr_config = configs_to_explore.pop();
+        var curr_config = configs_to_explore.shift();
         if (curr_config.stack.length === 0) {
             return "continue";
         }
