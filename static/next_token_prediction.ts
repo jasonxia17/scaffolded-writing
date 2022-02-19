@@ -27,7 +27,7 @@ function getPossibleNextTokens(input: string[], cfg: CFG): Set<string> {
     }];
 
     while (configs_to_explore.length > 0) {
-        const curr_config = configs_to_explore.pop();
+        const curr_config = configs_to_explore.shift();
 
         if (curr_config.stack.length === 0) {
             continue; // stack is empty so we can't get a next token from this thread
