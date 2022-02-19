@@ -1,3 +1,6 @@
+// Use the following command to compile to this file to .js:
+// tsc next_token_prediction.ts --lib es2015,dom --removeComments
+
 type CFG = {
     start: string;
     productions: Production[];
