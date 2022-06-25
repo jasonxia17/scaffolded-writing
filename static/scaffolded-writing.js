@@ -108,10 +108,7 @@ function getPossibleNextTokens(input, cfg) {
     return possible_next_tokens;
 }
 $(function () {
-    $('.question-grade').removeClass('mr-1').wrap('<span class="mr-1">').parent().tooltip({
-        title: "You cannot submit because your response is currently incomplete.",
-        placement: "bottom"
-    });
+    $('.question-grade').parent().tooltip();
 });
 function capitalizeFirstLetter(s) {
     return s.charAt(0).toUpperCase() + s.slice(1);
