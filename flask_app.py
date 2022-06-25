@@ -2,7 +2,6 @@ from flask import Flask, request
 import json
 
 from cfg import cfg_as_json
-from hotel_coupon_grader import Grader
 
 app = Flask(__name__)
 
@@ -15,7 +14,7 @@ def handle_submit() -> str:
         return "error"
 
     print(tokenized_sentence)
-    return Grader(tokenized_sentence).generate_feedback()
+    return "meowww!"
 
 
 @app.route("/")
