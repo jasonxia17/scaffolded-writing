@@ -20,7 +20,7 @@ def handle_submit() -> str:
 
 @app.route("/")
 def display_homepage() -> str:
-    with open("index.html") as f:
+    with open("static/index.html") as f:
         return f"<script>cfg = {json.dumps(cfg_as_json)};</script>" + f.read()
 
 
