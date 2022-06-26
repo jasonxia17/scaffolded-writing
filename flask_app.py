@@ -1,26 +1,37 @@
-from flask import Flask, request
-import json
-
-from cfg import cfg_as_json
+from flask import Flask, request, render_template
+import importlib
 
 app = Flask(__name__)
 
 
 @app.route("/submit", methods=["POST"])
 def handle_submit() -> str:
+    problem = importlib.import_module("problems.partition_digits_basic_version")
+
     tokenized_sentence = request.get_json()
+    data = {
+        "submitted_answers": {"subproblem_definition": tokenized_sentence},
+        "partial_scores": {},
+        "feedback": {},
+    }
 
-    if not isinstance(tokenized_sentence, list):
-        return "error"
+    problem.grade(data)
 
-    print(tokenized_sentence)
-    return "meowww!"
+    return data["feedback"]["subproblem_definition"]
 
 
 @app.route("/")
 def display_homepage() -> str:
-    with open("index.html") as f:
-        return f"<script>cfg = {json.dumps(cfg_as_json)};</script>" + f.read()
+    problem = importlib.import_module("problems.partition_digits_basic_version")
+
+    data = {"params": {}}
+    problem.generate(data)
+
+    return render_template(
+        'index.html',
+        statement=problem.statement,
+        cfg=data["params"]["subproblem_definition_cfg"]
+    )
 
 
 if __name__ == "__main__":
