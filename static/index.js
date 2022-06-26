@@ -1,6 +1,9 @@
 // contains logic specific to standalone website (not shared by PL)
 
-$('#submit').click(async e => {
+entered_tokens = []
+setUpScaffoldedWritingQuestion("", entered_tokens, cfg);
+
+$('.question-grade').click(async e => {
     $('#feedback').text('');
     $('.spinner-border').show();
 
@@ -14,8 +17,6 @@ $('#submit').click(async e => {
 
     const feedback = await response.text();
 
-    setTimeout(() => {
     $('#feedback').text(feedback);
-    $('.spinner-border').hide();
-    }, 1500)
+    $('#feedback-modal').modal('show')
 });

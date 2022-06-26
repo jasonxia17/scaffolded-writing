@@ -107,14 +107,10 @@ function getPossibleNextTokens(input, cfg) {
     }
     return possible_next_tokens;
 }
-$(function () {
-    $('.question-grade').parent().tooltip();
-});
 function capitalizeFirstLetter(s) {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
-function setUpScaffoldedWritingQuestion(question_name, initial_tokens, cfg) {
-    var entered_tokens = __spreadArray([], __read(initial_tokens), false);
+function setUpScaffoldedWritingQuestion(question_name, entered_tokens, cfg) {
     function updateNextTokenList() {
         var e_3, _a;
         var next_token_list = $('#possible-next-tokens');
