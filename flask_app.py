@@ -17,7 +17,7 @@ def handle_submit() -> str:
 
     problem.grade(data)
 
-    return data["feedback"]["subproblem_definition"]
+    return data["feedback"].get("subproblem_definition", "Good job!")
 
 
 @app.route("/")
