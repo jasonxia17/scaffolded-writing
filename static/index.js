@@ -7,7 +7,7 @@ $('.question-grade').click(async e => {
     $('#feedback').text('');
     $('.spinner-border').show();
 
-    const response = await fetch('/submit', {
+    const response = await fetch('submit', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -17,7 +17,7 @@ $('.question-grade').click(async e => {
 
     const feedback = await response.text();
 
-    $('#feedback').text(feedback);
+    $('#feedback').html(feedback);
     renderMathInElement(document.getElementById('feedback'), katex_macros);
     $('#feedback-modal').modal('show');
 });
