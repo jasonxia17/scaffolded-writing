@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def redirect_to_problem():
-    return redirect("/min_hotel_cost_with_coupons/problem")
+    return render_template("dp_intro.html")
 
 @app.route("/<problem_name>/problem")
 def display_problem(problem_name: str) -> str:

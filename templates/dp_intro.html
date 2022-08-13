@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h4 class="mt-3">Overview</h4>
+<p>
+  The scaffolded writing tool is a novel approach to autograding responses to an open-ended prompt. The example prompts showcased on this website ask students to write a subproblem definition for a dynamic programming problem. On this page, we will provide some brief background on dynamic programming which will make it easier to interact with the example problems on this website.
+</p>
+
+<h4>Dynamic Programming</h4>
+<p>
+  Dynamic programming is often applied to optimization problems, e.g. finding the minimum cost of achieving some goal. In these applications, it often makes sense to define the the subproblems as the optimization of a smaller part of the goal. For example, consider the problem below:
+</p>
+
+<blockquote>
+  You are planning a road trip along a highway with $n$ evenly-spaced hotels. These hotels have varying costs; the costs of staying overnight at each of the hotels are provided in the array $HotelCosts[1..n]$, where $HotelCosts[i]$ is the cost of Hotel $i$. Each day, you can either travel to the next hotel, or you can skip a hotel and travel forward by two hotels. Each night, you must stay at a hotel. Furthermore, you have $k$ coupons that allow you to stay at a hotel for free. Describe a dynamic programming algorithm to determine the minimum possible cost of traveling from Hotel $1$ to Hotel $n$.
+</blockquote>
+
+<p>
+  To solve this problem, we can use the following subproblem definition:
+</p>
+
+<blockquote>
+  Define $MinCost(i,j)$ to be the minimum cost of traveling from Hotel $i$ to Hotel $n$ using at most $j$ coupons.
+</blockquote>
+
+<p>
+  We must explain how to determine the <em>final answer</em> by calling this subproblem function. In this case, calling $MinCost(1,k)$ will return the minimum possible cost of traveling from Hotel $1$ to Hotel $n$ using at most $k$ coupons, which is the final answer requested by the problem.
+</p>
+
+<p>
+  Furthermore, we need to write down a <em>recursive formula</em> for computing the function that we have described. To write a formula for $MinCost(i,j)$, we need to consider what choices we have when we are at Hotel $i$ and have $j$ coupons remaining:
+</p>
+
+<ul>
+  <li>
+    We could use a coupon at Hotel $i$ and move forward one hotel. Then, to finish the trip, we have to travel from Hotel $i+1$ to Hotel $n$ using at most $j-1$ coupons, and the minimum possible cost of this is given by $MinCost(i+1,j-1)$.
+  </li>
+  <li>
+    We could use a coupon at Hotel $i$ and move forward two hotels. Then, to finish the trip, we have to travel from Hotel $i+2$ to Hotel $n$ using at most $j-1$ coupons, and the minimum possible cost of this is given by $MinCost(i+2,j-1)$.
+  </li>
+  <li>
+    We could <em>not</em> use a coupon at Hotel $i$ and move forward one hotel. Then, to finish the trip, we have to pay for Hotel $i$, and we have to travel from Hotel $i+1$ to Hotel $n$ using at most $j$ coupons. The minimum possible cost of this is given by $HotelCosts[i] + MinCost(i+1,j)$.
+  </li>
+  <li>
+    We could <em>not</em> use a coupon at Hotel $i$ and move forward two hotels. Then, to finish the trip, we have to pay for Hotel $i$, and we have to travel from Hotel $i+2$ to Hotel $n$ using at most $j$ coupons. The minimum possible cost of this is given by $HotelCosts[i] + MinCost(i+2,j)$.
+  </li>
+</ul>
+
+<p>
+  To combine these choices into a single formula, we want to choose the option that results in the lowest overall cost, so we take the minimum across all choices:
+</p>
+
+$$
+    MinCost(i, j) = \min \begin{cases}
+        MinCost(i + 1, j - 1) \\
+        MinCost(i + 2, j - 1) \\
+        HotelCosts[i] + MinCost(i + 1, j) \\
+        HotelCosts[i] + MinCost(i + 2, j) \\
+    \end{cases}
+$$
+
+<p>
+  To complete this formula, we must also include some additional logic to handle "boundary" cases/base cases (e.g. when we have no coupons remaining, or when we can't move forward by two hotels because we're near the end). Then, the rest of the solution would be focused on explaining how to compute this function efficiently so that we can obtain our final answer. These details are not necessary for understanding the part of the process that our tool is focused on, so we have omitted them here.
+</p>
+
+<p>
+  As an aside, try to imagine how little sense this formula would make if we didn't first write description of what the function $MinCost(i, j)$ actually does. It would be nearly impossible to reason about why it is correct or to even come up with it in the first place. Hopefully, this example sheds some light on why writing the subproblem definition is such an important step of solving a dynamic programming problem.
+</p>
+
+<p>
+  There are multiple reasons that a subproblem definition could be "wrong". First of all, students write might an ambiguous or unclear statement that doesn't precisely define what the function actually outputs. An extreme example of this is shown below:
+</p>
+
+<blockquote>
+  Define $MinCost(i,j)$ to be the answer for $i$ and $j$.
+</blockquote>
+
+<p>
+  Students might also define a subproblem that can't be used to determine the final answer requested by the problem. For example, with the following subproblem description, it wouldn't be possible to enforce the restriction that at most $k$ coupons are used:
+</p>
+
+<blockquote>
+  Define $MinCost(i,j)$ to be the minimum cost of traveling from Hotel $i$ to Hotel $n$ using at most $j$ <em>hotels</em>.
+</blockquote>
+
+<p>
+  Another potential issue is that the subproblem can't be reduced to smaller instances of itself (i.e. it's not possible to write a recursive formula for computing the function). For example, if we have $k$ coupons and we decide to use a coupon, then we would need to recursively call a subproblem that analyzes trips that use $k-1$ coupons. However, the following subproblem definition does not allow us to do that:
+</p>
+
+<blockquote>
+  Define $MinCost(i)$ to be the minimum cost of traveling from Hotel $i$ to Hotel $n$ using at most $k$ coupons.
+</blockquote>
+
+<p>
+  Our tool strives to provide meaningful feedback for all of these issues (and some other issues not mentioned here) so that students can correct the issue and quickly get back on the right track.
+</p>
+
+<p>
+  Another complication to note is that there are multiple possible subproblem definitions that work. For instance, we can analyze prefixes of the trip instead:
+</p>
+
+<blockquote>
+  Define $MinCost(i,j)$ to be the minimum cost of traveling from Hotel $1$ to Hotel $i$ using at most $j$ coupons.
+</blockquote>
+
+<p>
+  Also, we can switch the role of the variables $i$ and $j$ in the definition:
+</p>
+
+<blockquote>
+  Define $MinCost(i,j)$ to be the minimum cost of traveling from Hotel $j$ to Hotel $n$ using at most $i$ coupons.
+</blockquote>
+
+<p>
+  Furthermore, we can use different wording without changing the meaning of the statement at all:
+</p>
+
+<blockquote>
+  Let $MinCost(i, j)$ denote the least possible cost of a trip starting at the $i^\text{th}$ hotel and ending at the last hotel, under the constraint that at most $j$ coupons can be used.
+</blockquote>
+
+<p>
+  Handling these cases is something we have to keep in mind when designing our tool. You can try submitting your own responses to this problem to see how it handles the correct and incorrect answers discussed above! (It is available under the "Autograded Problems" dropdown at the top of this website.)
+</p>
+{% endblock %}
