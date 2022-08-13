@@ -45,9 +45,10 @@ class DPStudentSubmission(StudentSubmission):
             return set()
 
         field_subtree, = subtrees
-        field_value, = field_subtree.leaves()
 
-        return self.__extract_variables(field_value).intersection(self.func_params)
+        return set.union(
+            *[self.__extract_variables(leaf) for leaf in field_subtree.leaves()]
+        ).intersection(self.func_params)
 
     def is_field_value_parameterized(self, field_label: str) -> bool:
         """

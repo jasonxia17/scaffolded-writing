@@ -52,7 +52,7 @@ class StudentSubmission():
         assert len(path) > 0
 
         if not self.cfg.can_produce_path(*path):
-            raise PathCanNeverExistWarning
+            raise PathCanNeverExistWarning(path)
 
         # Handle edge case where path is just a single terminal
         if len(path) == 1 and path[0] in self.token_list:
