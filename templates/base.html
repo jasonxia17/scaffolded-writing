@@ -64,46 +64,7 @@
   </nav>
 
   <div class="container pb-2">
-    <div class="py-3">
-      <h4>Problem Statement</h4>
-      <p>Write a subproblem definition that can be used as the basis of a dynamic programming algorithm for this
-        problem.</p>
-      <blockquote style="padding-left: 1.4rem;  border-left: 4px solid #dadada;">
-        {{statement|safe}}
-      </blockquote>
-    </div>
-
-    <div class="mb-4">
-      <h4>Your Response</h4>
-
-      <div class="input-group mb-2">
-        <textarea id="sentence" class="form-control" readonly rows=5
-          placeholder="Click one of the tokens below to start constructing your response!"></textarea>
-      </div>
-
-      <button id="delete-last-token" type="button" class="btn btn-outline-danger btn-sm" disabled>
-        Delete Last Token
-      </button>
-      <button id="clear-response" type="button" class="btn btn-outline-danger btn-sm" disabled>
-        Clear Response
-      </button>
-    </div>
-
-    <div class="mb-3">
-      <h4>Possible next tokens (click one)</h4>
-      <h4 id="possible-next-tokens" onselectstart="return false"></h4>
-      <div id="no-more-tokens-message" style="display: none;">
-        You have completed your response; no more tokens can be appended. You can either get feedback on your response
-        by clicking the button below, or you can revise your response by deleting tokens from it.
-      </div>
-    </div>
-
-    <span class="mb-3 d-inline-block" data-toggle="tooltip"
-      title="You cannot get feedback yet because your response is currently incomplete.">
-      <button type="button" class="btn btn-primary question-grade scaffolded-writing-incomplete">
-        Get Feedback!
-      </button>
-    </span>
+    {% block content %}{% endblock %}
   </div>
 
   <div class="modal fade" id="feedback-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
