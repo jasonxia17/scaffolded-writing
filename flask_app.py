@@ -20,7 +20,7 @@ def display_problem(problem_name: str) -> str:
     problem.generate(data)
 
     return render_template(
-        'problem.html',
+        'autograded_problem.html',
         statement=problem.statement,
         cfg=data["params"]["subproblem_definition_cfg"]
     )
