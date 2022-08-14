@@ -12,7 +12,7 @@ FREE_RESPONSE_PROBLEMS = {"max_halloween_profit", "coloring_mistakes"}
 @app.route("/<problem_name>/problem")
 def display_problem(problem_name: str) -> str:
     if problem_name in FREE_RESPONSE_PROBLEMS:
-        return "hello world"
+        return render_template(problem_name + ".html")
 
     problem = importlib.import_module("problems." + problem_name)
 

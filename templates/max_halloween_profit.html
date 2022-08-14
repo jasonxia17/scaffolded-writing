@@ -1,0 +1,37 @@
+{% extends 'problem_base.html' %}
+
+{% block problem_statement %}
+<p>
+  Halloween is coming up soon, and you are trying to come up with an optimal plan of action for trick-or-treating on Exchange Road. There are $n$ houses on Exchange Road labeled $1$ through $n$; you must visit each of those houses in order. Also, there are $m$ candy varieties labeled $1$ through $m$.
+</p>
+
+<p>
+  On Exchange Road, the rules for trick-or-treating are slightly different from normal. Instead of receiving free candy at every house, you must exchange one type of candy for a <em>different</em> type of candy at each house. Each house values each candy variety differently. You are provided with an array $Value[1..n,1..m]$ where $Value[i,c]$ is the amount that House $i$ values Candy $c$. If you exchange Candy $c$ for Candy $c'$ ($c \neq c'$) at House $i$, then you will receive a payment of $Value[i,c] - Value[i,c']$. (If this quantity is negative, you actually have to pay the house.)</p>
+
+<p>
+  You start with exactly one piece of candy and no money. You get to choose what candy variety you have at the start. Furthermore, you cannot make any exchange that would cause your balance to go negative (even if it becomes positive again later). What is the maximum amount of money that you could have after visiting all $n$ houses?
+</p>
+
+<h5>Example</h5>
+
+<p>
+  Suppose that $Value = [[11, 12, 13],\ [5, 10, 100]]$. Then, the maximum profit would be $6$:
+</p>
+
+<ul>
+  <li>Start with Candy 3</li>
+  <li>Exchange Candy 3 for Candy 2 at House 1, get paid $13 - 12 = 1$</li>
+  <li>Exchange Candy 2 for Candy 1 at House 2, get paid $10 - 5 = 5$</li>
+</ul>
+
+<p>
+  Now, suppose that that $Value = [[21, 20, 15],\ [11, 12, 13],\ [5, 10, 100]]$. Then, the maximum profit would be $95$:
+</p>
+<ul>
+  <li>Start with Candy 1</li>
+  <li>Exchange Candy 1 for Candy 2 at House 1, get paid $21 - 20 = 1$</li>
+  <li>Exchange Candy 2 for Candy 3 at House 2, get paid $12 - 13 = -1$ (i.e., you have to pay House 2, which is allowed because it doesn't cause your balance to go negative)</li>
+  <li>Exchange Candy 3 for Candy 1 at House 3, get paid $100 - 5 = 95$</li>
+</ul>
+
+{% endblock %}
