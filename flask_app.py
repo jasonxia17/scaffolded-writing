@@ -4,11 +4,16 @@ import importlib
 app = Flask(__name__)
 
 @app.route("/")
-def redirect_to_problem():
+def display_homepage():
     return render_template("dp_intro.html")
+
+FREE_RESPONSE_PROBLEMS = {"max_halloween_profit", "coloring_mistakes"}
 
 @app.route("/<problem_name>/problem")
 def display_problem(problem_name: str) -> str:
+    if problem_name in FREE_RESPONSE_PROBLEMS:
+        return "hello world"
+
     problem = importlib.import_module("problems." + problem_name)
 
     data = {"params": {}}
