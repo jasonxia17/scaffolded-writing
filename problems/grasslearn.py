@@ -75,7 +75,7 @@ statement = """
 
 <p>In order to get a grade that you're happy with, you want to earn at least $p$ total points on this assignment. What is the minimum number of minutes you need to spend in order to achieve this goal?</p>
 
-<h4>Example</h4>
+<h5>Example</h5>
 <p>Consider $TimeNeeded = [20, 10, 5, 100, 2, 1]$.</p>
 <ul>
     <li>If $p = 6$, then answering Questions 2, 3, 5, and 6 correctly will earn $1+2+1+2=6$ points, and this will take $10+5+2+1=18$ minutes.</li>

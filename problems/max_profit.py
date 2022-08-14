@@ -49,6 +49,6 @@ statement = """
 </ul>
 <p>What is the maximum total profit Burr can secure from these $n$ trials?</p>
 
-<h4>Example</h4>
+<h5>Example</h5>
 <p>If $profit = [3, 7, 3, 5, 6, 4]$ and $skip = [2, 0, 2, 3, 1, 2]$, then Burr should take trial 2, rest for no trials, take trial 3, rest for 2 trials, then finally take trial 6. The total profit would be $7 + 3 + 4 = 14$.</p>
 """

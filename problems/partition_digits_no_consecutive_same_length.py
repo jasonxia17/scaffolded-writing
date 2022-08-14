@@ -63,7 +63,7 @@ statement = """
 <p>You are given a sequence of digits $A[1..n]$ where each digit is between 1 and 9 (inclusive). You are asked to insert $+$ signs in between the digits to partition them into terms which will be added together. The length of each term in the summation must be either 1, 2, or 3 digits. Furthermore, no two consecutive terms in the summation can have the same length.</p>
 <p>What is the maximum sum that can be achieved under these constraints?</p>
 
-<h4>Example</h4>
+<h5>Example</h5>
 If $A = 9212121921$, then the maximum sum that can be achieved is $921+2+12+1+921=1857$.
 <ul>
     <li>Note that $921+212+1+921=2055$ achieves a larger sum, but this is not allowed because there are two consecutive 3-digit terms.</li>
