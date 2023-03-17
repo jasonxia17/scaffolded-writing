@@ -204,7 +204,7 @@ function setUpScaffoldedWritingQuestion(question_name, entered_tokens, cfg) {
     });
     $('#clear-response').on('click', function () {
         if (window.confirm('Are you sure you want to clear your response?')) {
-            entered_tokens = [];
+            entered_tokens.length = 0;
             handleTokenEnteredOrDeleted();
         }
     });
