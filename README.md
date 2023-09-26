@@ -1,19 +1,17 @@
-## Automated Feedback on English Statements in Precise Mathematical Writing
+## Using Context-Free Grammars to Scaffold and Automate Feedback in Precise Mathematical Writing
 
-### Motivation
+This repo contains the implementation of tool described in this [paper](https://zilles.cs.illinois.edu/papers/xia_CFG_writing_grading_sigcse23.pdf).
 
-The problem that I am solving is building automated systems that can grade and give feedback on precise mathematical statements/definitions inputted by students. This skill is extremely important in theoretical computer science classes such as CS 374 (the required undergraduate Algorithms & Models of Computation course at UIUC).
+If you want to try out the tool without running this code locally, you can do so on this [website](https://scaffoldedwriting.pythonanywhere.com/).
 
-As part of the course staff for CS 374, I have been working on developing exercises that guide students through the problem-solving process for many different types of problems. However, one major limitation we have run into is that we aren’t able to give students any agency in writing these statements themselves. (Students do get practice writing these statements in a freeform environment on written homework assignments. However, it takes ~2 weeks for students to receive grades and feedback on these assignments, which is not optimal for being able to iterate and improve based on feedback.)
+We also have a [video presentation](https://dl.acm.org/doi/10.1145/3545945.3569728#sec-supp) that demonstrates how a student would use the tool.
 
-This is a pretty big shortcoming, because being able to formulate these statements clearly and precisely is a crucial part of the problem-solving process that sheds clarity on the rest of the solution. Without this step, it’s impossible to reason through the correctness of the solution. That's why I want to build a system which can help students learn this skill.
+### Abstract
 
-### Demo Video
+In technical writing, certain statements must be written very carefully in order to clearly and precisely communicate an idea. Students are often asked to write these statements in response to an open-ended prompt, making them difficult to autograde with traditional methods. We present what we believe to be a novel approach for autograding these statements by restricting students' submissions to a pre-defined context-free grammar (configured by the instructor). In addition, our tool provides instantaneous feedback that helps students improve their writing, and it scaffolds the process of constructing a statement by reducing the number of choices students have to make compared to free-form writing. We evaluated our tool by deploying it on an assignment in an undergraduate algorithms course. The assignment contained five questions that used the tool, preceded by a pre-test and followed by a post-test. We observed a statistically significant improvement from the pre-test to the post-test, with the mean score increasing from 7.2/12 to 9.2/12.
 
-https://www.youtube.com/watch?v=x4u1wt93Le4
+### Setup for Local Development
 
-### Setup
-
-You'll need Python 3.9 to run this locally. (Earlier versions of Python might work too, but I haven't tested them myself.)
+You'll need Python 3.9 to run this locally.
 
 Clone the repository, then run `pip install -r requirements.txt`. Next, run `python3.9 server.py`, go to http://localhost:5000/, and you should be able to start playing with the tool. Enjoy!
